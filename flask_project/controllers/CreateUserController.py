@@ -5,12 +5,6 @@ from flask_project import db, bcrypt
 
 
 class CreateUserController(Resource):
-    @staticmethod
-    def get():
-        all_users = User.query.all()
-        new_user = UserSchema(many=True).dump(all_users)
-
-        return jsonify(new_user)
 
     @staticmethod
     def post():

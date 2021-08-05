@@ -10,6 +10,15 @@ class User(db.Model):
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
 
+    def __repr__(self):
+        user = {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }
+
+        return f"{user}"
+
 
 class UserSchema(marsh.SQLAlchemyAutoSchema):
     class Meta:
