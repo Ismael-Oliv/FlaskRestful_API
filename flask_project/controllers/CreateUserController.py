@@ -1,15 +1,16 @@
 from flask import jsonify
 from flask_restful import Resource, abort, reqparse
-from flask_project.model import User
+from flask_project.model import User, UserSchema
 from flask_project import db, bcrypt
-from flask_project.serializer import serializer
 
 
-class UsersController(Resource):
+class CreateUserController(Resource):
     @staticmethod
     def get():
         all_users = User.query.all()
-        return jsonify([*map(serializer, all_users)])
+        new_user = UserSchema(many=True).dump(all_users)
+
+        return jsonify(new_user)
 
     @staticmethod
     def post():
@@ -26,7 +27,7 @@ class UsersController(Resource):
             abort(403, error="Usuario já cadastrado")
 
         try:
-            rashed_password = bcrypt.generate_password_hash(args.password, 4)
+            rashed_password = bcrypt.generate_password_hash(args.password).decode("utf-8")
             user = User(
                 username=args.username,
                 email=args.email,
@@ -37,8 +38,9 @@ class UsersController(Resource):
             db.session.commit()
 
             created_user = User.query.filter_by(email=args.email).all()
+            new_user = UserSchema(many=True).dump(created_user)
 
-            return jsonify([*map(serializer, created_user)])
+            return jsonify(new_user)
 
         except Exception as Ex:
             print(Ex)
